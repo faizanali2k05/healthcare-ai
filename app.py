@@ -22,12 +22,15 @@ def chat():
     if not message:
         return jsonify({"error": "Message required"}), 400
 
-    reply = get_ai_response(message)
+    try:
+        reply = get_ai_response(message)
 
-    if user_id:
-        save_chat(user_id, message, reply)
+        if user_id:
+            save_chat(user_id, message, reply)
 
-    return jsonify({"reply": reply})
+        return jsonify({"reply": reply})
+    except Exception as e:
+        return jsonify({"reply": f"Backend Error: {str(e)}"}), 200
 
 if __name__ == "__main__":
     app.run()
