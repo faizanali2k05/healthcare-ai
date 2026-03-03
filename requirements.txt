@@ -4,3 +4,4 @@ supabase
 python-dotenv
 gunicorn
 transformers  # added for Hugging Face model inference
+google-cloud-translate  # added for Google Translate API
