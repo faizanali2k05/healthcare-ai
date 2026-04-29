@@ -1,0 +1,16 @@
+# Ignore everything in this repo by default.
+*
+
+# Keep this ignore file tracked.
+!.gitignore
+
+# Track only the Render backend folder.
+!backend/
+!backend/**
+
+# Never commit secrets or generated Python files.
+backend/.env
+backend/.env.*
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.pyc
