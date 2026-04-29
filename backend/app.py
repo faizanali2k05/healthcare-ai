@@ -3,7 +3,6 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import google.generativeai as genai
 
 load_dotenv()
 
@@ -25,6 +24,8 @@ SYSTEM_INSTRUCTIONS = os.getenv(
 def _model():
     if not API_KEY:
         raise RuntimeError("GEMINI_API_KEY is missing.")
+
+    import google.generativeai as genai
 
     genai.configure(api_key=API_KEY)
     return genai.GenerativeModel(
@@ -49,6 +50,20 @@ def health():
     return jsonify({"status": "ok"})
 
 
+@app.get("/routes")
+def routes():
+    return jsonify(
+        {
+            "routes": [
+                "GET /",
+                "GET /health",
+                "GET /routes",
+                "POST /chat",
+            ]
+        }
+    )
+
+
 @app.post("/chat")
 def chat():
     data = request.get_json(silent=True) or {}
@@ -66,6 +81,19 @@ def chat():
     except Exception as exc:
         app.logger.exception("Chat generation failed")
         return jsonify({"error": str(exc)}), 500
+
+
+@app.errorhandler(404)
+def not_found(_error):
+    return (
+        jsonify(
+            {
+                "error": "Route not found.",
+                "available_routes": ["/", "/health", "/routes", "/chat"],
+            }
+        ),
+        404,
+    )
 
 
 if __name__ == "__main__":
