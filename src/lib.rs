@@ -32,9 +32,40 @@
 //! assert_eq!(fw.prefix_sum(1), 11);
 //! ```
 //!
-//! `no_std` + `alloc` compatible: disable the default `std` feature.
+//! # Choosing a structure
+//!
+//! | | [`SegmentTree`] | [`FenwickTree`] |
+//! |---|---|---|
+//! | Operation | any [`Monoid`] | addition only |
+//! | Query | arbitrary range | prefix / range sum |
+//! | Update | assign ([`update`](SegmentTree::update)) | add delta ([`add`](FenwickTree::add)) |
+//! | Memory | `2n` elements | `n + 1` elements |
+//!
+//! Prefer [`FenwickTree`] when you only need sums — it is smaller and has a
+//! tighter constant factor. Use [`SegmentTree`] for anything else.
+//!
+//! # Complexity
+//!
+//! Construction from a slice is `O(n)`; every query and update is `O(log n)`.
+//! [`SegmentTree::get`] is `O(1)`.
+//!
+//! # Panics
+//!
+//! Index and range arguments are bounds-checked and panic on violation; see the
+//! individual methods. Empty ranges are valid and yield the monoid identity.
+//!
+//! # Feature flags
+//!
+//! - **`std`** *(enabled by default)* — links against `std`. Disable it for
+//!   `no_std` targets; the crate then needs only `alloc`:
+//!
+//! ```toml
+//! segfen = { version = "0.1", default-features = false }
+//! ```
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
+#![doc(html_root_url = "https://docs.rs/segfen/0.1.0")]
 #![deny(missing_docs)]
 #![forbid(unsafe_code)]
 
@@ -58,6 +89,14 @@ pub trait Monoid {
 }
 
 /// Ready-made sum monoid for any numeric-like type.
+///
+/// ```
+/// use segfen::{SegmentTree, Sum};
+///
+/// let st = SegmentTree::<Sum<i64>>::from_slice(&[1, 2, 3, 4, 5]);
+/// assert_eq!(st.query(1..4), 9);
+/// ```
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Sum<T>(core::marker::PhantomData<T>);
 
 impl<T> Monoid for Sum<T>

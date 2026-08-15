@@ -1,3 +1,33 @@
-[workspace]
-resolver = "2"
-members = ["anystash", "segfen", "voxelops", "ogc-gml", "sentencize"]
+[package]
+name = "segfen"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+license = "MIT OR Apache-2.0"
+description = "Generic segment tree (over any monoid) and Fenwick/binary-indexed tree for O(log n) range queries. no_std compatible."
+keywords = ["segment-tree", "fenwick", "bit", "range-query", "data-structures"]
+categories = ["data-structures", "no-std", "algorithms"]
+repository = "https://github.com/faizanali2k05/segfen"
+documentation = "https://docs.rs/segfen"
+homepage = "https://github.com/faizanali2k05/segfen"
+readme = "README.md"
+exclude = [".github/", "*.log"]
+
+[features]
+default = ["std"]
+# Enables linking against `std`. Disable for `no_std` + `alloc` targets.
+std = []
+
+[dependencies]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints.rust]
+missing_debug_implementations = "warn"
+unreachable_pub = "warn"
+
+[profile.release]
+opt-level = 3
+lto = true
